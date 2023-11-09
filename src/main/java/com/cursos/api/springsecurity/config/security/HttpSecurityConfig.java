@@ -103,5 +103,5 @@ public class HttpSecurityConfig {
 		authorizeHttpRequests.anyRequest().authenticated();
 		
 	}
-
+//The new feature
 }
