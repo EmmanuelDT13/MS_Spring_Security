@@ -43,7 +43,7 @@ public class UserController {
 	public ResponseEntity<Map<String, String>> logout(HttpServletRequest request){
 		tokenServiceImpl.removeToken(request);
 		Map<String,String> respuesta = new HashMap<String,String>();
-		respuesta.put("Respuesta", "Proceso de logout completado");
+		respuesta.put("Respuesta", "Proceso de logout completado satisfactoriamente");
 		return ResponseEntity.ok(respuesta);
 		
 	}
