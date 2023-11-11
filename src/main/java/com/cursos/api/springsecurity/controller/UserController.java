@@ -45,6 +45,7 @@ public class UserController {
 		Map<String,String> respuesta = new HashMap<String,String>();
 		respuesta.put("Respuesta", "Proceso de logout completado satisfactoriamente");
 		respuesta.put("Respuesta", "Proceso de logout completado sin inconvenientes");
+		respuesta.put("Respuesta", "Proceso de logout completado correctamente");
 		return ResponseEntity.ok(respuesta);
 		
 	}
