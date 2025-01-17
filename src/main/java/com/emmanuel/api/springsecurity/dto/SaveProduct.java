@@ -9,10 +9,10 @@ import java.math.BigDecimal;
 
 public class SaveProduct implements Serializable {
 
-    @NotBlank
+    @NotBlank(message = "The name must have at least 2 digits")
     private String name;
 
-    @DecimalMin(value = "0.01")
+    @DecimalMin(value = "0.01", message = "The price mustn't be null or 0")
     private BigDecimal price;
 
     @Min(value = 1)

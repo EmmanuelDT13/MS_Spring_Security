@@ -57,7 +57,7 @@ INSERT INTO granted_permission (role_id, operation_id) VALUES (3, 15);
 INSERT INTO granted_permission (role_id, operation_id) VALUES (3, 16);
 
 -- CREACIÓN DE USUARIOS
-INSERT INTO usuario (name, username, password, role_id) VALUES ('Emmanuel','EmmanuelDT13',  '$2a$12$xmaoiXXitTdWGyhJ9Pope.WhuhQTKgguW/kBK.4BUukbo6I/MMpwu', 1);
+INSERT INTO usuario (name, username, password, role_id) VALUES ('Emmanuel','Jueves31',  '$2a$12$xmaoiXXitTdWGyhJ9Pope.WhuhQTKgguW/kBK.4BUukbo6I/MMpwu', 1);
 INSERT INTO usuario (name, username, password, role_id) VALUES ('Juan','JuanitoBanana', '$2a$12$xmaoiXXitTdWGyhJ9Pope.WhuhQTKgguW/kBK.4BUukbo6I/MMpwu', 2);
 INSERT INTO usuario (name, username, password, role_id) VALUES ('Ernesto','Ernesto91', '$2a$12$xmaoiXXitTdWGyhJ9Pope.WhuhQTKgguW/kBK.4BUukbo6I/MMpwu', 3);
 

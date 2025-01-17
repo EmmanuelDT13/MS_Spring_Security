@@ -13,8 +13,8 @@ import com.emmanuel.api.springsecurity.service.IRoleService;
 @Service
 public class IRoleServiceImpl implements IRoleService{
 
-	@Value("${security.default.role}")
-	private String roleName;
+	//@Value("${security.default.role}")
+	private String roleName= "CUSTOMER";
 	
 	@Autowired
 	private RoleRepository rolerepository;
