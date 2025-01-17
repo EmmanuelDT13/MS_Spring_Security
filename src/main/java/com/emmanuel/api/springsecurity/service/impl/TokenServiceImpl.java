@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -31,15 +33,28 @@ public class TokenServiceImpl {
 		Date currentTime = new Date(System.currentTimeMillis());
 		Date expirationTime = new Date(currentTime.getTime() + (60*60*1000));
 		
-		String token = Jwts.builder()
-				.setClaims(claims)
-				.setSubject(user.getUsername())
-				.setIssuedAt(currentTime)
-				.setExpiration(expirationTime)
-				.setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-				.signWith(createKey(), SignatureAlgorithm.HS256)
-				.compact();
+//		String token = Jwts.builder()
+//				.setClaims(claims)
+//				.setSubject(user.getUsername())
+//				.setIssuedAt(currentTime)
+//				.setExpiration(expirationTime)
+//				.setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+//				.signWith(createKey(), SignatureAlgorithm.HS256)
+//				.compact();
 		
+		
+		String token = Jwts.builder()
+				
+				.header()
+					.type("JWT")
+					.and()
+				.subject(user.getUsername())
+				.issuedAt(currentTime)
+				.expiration(expirationTime)
+				.claims(claims)
+				.signWith(this.createKey(), Jwts.SIG.HS256)
+				
+				.compact();
 		return token;
 	}
 	
@@ -60,15 +75,15 @@ public class TokenServiceImpl {
 		return extractClaims(token).getSubject();
 	}
 	
-	private Key createKey() {
-		String contrasena = "EmmanuelDT13##1234567ABCD_33017!?.97";
+	private SecretKey createKey() {
+		String contrasena = "JuanHJ13##1234567ABCD_33017!?.97";
 		byte[] password = contrasena.getBytes();
-		Key my_key = Keys.hmacShaKeyFor(password);
+		SecretKey my_key = Keys.hmacShaKeyFor(password);
 		return my_key;
 	}
 	
 	private Claims extractClaims(String token) {
-		return Jwts.parserBuilder().setSigningKey(createKey()).build().parseClaimsJws(token).getBody();
+		return Jwts.parser().verifyWith(createKey()).build().parseSignedClaims(token).getPayload();
 	}
 
 	public Date getExpirationDate(String token) {

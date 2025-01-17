@@ -51,6 +51,7 @@ public class HttpSecurityConfig {
 			.authenticationProvider(authenticationProvider)
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 			.authorizeHttpRequests(authorizeHttpRequests -> {
+				authorizeHttpRequests.requestMatchers(HttpMethod.POST, "/customers/**").permitAll();
 				authorizeHttpRequests.anyRequest().access(my_authorizationManager);
 			})
 			.exceptionHandling( exceptionConfig -> {
