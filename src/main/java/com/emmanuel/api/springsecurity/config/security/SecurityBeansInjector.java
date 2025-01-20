@@ -36,6 +36,7 @@ public class SecurityBeansInjector {
 	
 	@Bean
 	PasswordEncoder generatePasswordEncoder() {
+		PasswordEncoder encoder = new BCryptPasswordEncoder();
 		return new BCryptPasswordEncoder();
 	}
 	

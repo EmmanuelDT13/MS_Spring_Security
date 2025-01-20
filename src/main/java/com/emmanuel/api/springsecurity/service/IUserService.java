@@ -6,6 +6,8 @@ import com.emmanuel.api.springsecurity.persistence.entity.User;
 
 public interface IUserService {
 
+	public User readMyProfile();
+	
 	public User createAnUser(UserDtoRequest userDtoRequest);
 	
 	public UserDtoResponse updateUser(UserDtoRequest userDtoRequest);

@@ -5,7 +5,7 @@ import java.util.List;
 
 public enum ROLE_ENUM {
 
-	ACMON(Arrays.asList(
+	ADMINISTRATOR(Arrays.asList(
 			//Acmon
 			RolePermission.READ_ALL_PRODUCTS,
 			RolePermission.READ_ONE_PRODUCT,

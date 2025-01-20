@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.emmanuel.api.springsecurity.dto.LoginDtoRequest;
 import com.emmanuel.api.springsecurity.dto.UserDtoRequest;
 import com.emmanuel.api.springsecurity.dto.UserDtoResponse;
+import com.emmanuel.api.springsecurity.persistence.entity.User;
 import com.emmanuel.api.springsecurity.service.impl.AuthenticationServiceImpl;
 import com.emmanuel.api.springsecurity.service.impl.TokenServiceImpl;
+import com.emmanuel.api.springsecurity.service.impl.UserServiceImpl;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -27,6 +30,9 @@ public class UserController {
 	
 	@Autowired
 	private TokenServiceImpl tokenServiceImpl;
+	
+	@Autowired
+	private UserServiceImpl userServiceImpl;
 	
 	@PostMapping(path="/createUser")
 	public ResponseEntity<UserDtoResponse> createUser(@RequestBody UserDtoRequest userdtorequest){
@@ -49,6 +55,13 @@ public class UserController {
 		respuesta.put("Respuesta", "Proceso de logout completado correctamente");
 		return ResponseEntity.ok(respuesta);
 		
+	}
+	
+	@GetMapping(path="/profile")
+	public ResponseEntity<User> readProfile(){
+		
+		
+		return ResponseEntity.ok(userServiceImpl.readMyProfile());
 	}
 	
 }

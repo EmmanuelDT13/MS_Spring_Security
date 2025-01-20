@@ -33,16 +33,6 @@ public class TokenServiceImpl {
 		Date currentTime = new Date(System.currentTimeMillis());
 		Date expirationTime = new Date(currentTime.getTime() + (60*60*1000));
 		
-//		String token = Jwts.builder()
-//				.setClaims(claims)
-//				.setSubject(user.getUsername())
-//				.setIssuedAt(currentTime)
-//				.setExpiration(expirationTime)
-//				.setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-//				.signWith(createKey(), SignatureAlgorithm.HS256)
-//				.compact();
-		
-		
 		String token = Jwts.builder()
 				
 				.header()
