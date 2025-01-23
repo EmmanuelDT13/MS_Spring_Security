@@ -23,7 +23,7 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ACMON', 'ASSISTANT_ACMON', 'CUSTOMER')")
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ASSISTANT_ADMINISTRATOR', 'CUSTOMER')")
     public ResponseEntity<Page<Product>> findAll(Pageable pageable){
 
         Page<Product> productsPage = productService.findAll(pageable);
@@ -36,7 +36,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    @PreAuthorize("hasAnyRole('ACMON', 'ASSISTANT_ACMON', 'CUSTOMER')")
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ASSISTANT_ADMINISTRATOR', 'CUSTOMER')")
     public ResponseEntity<Product> findOneById(@PathVariable Long productId){
         Optional<Product> product = productService.findOneById(productId);
         if(product.isPresent()){
@@ -46,21 +46,21 @@ public class ProductController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ACMON')")
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     public ResponseEntity<Product> createOne(@RequestBody @Valid SaveProduct saveProduct){
         Product product = productService.createOne(saveProduct);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
     @PutMapping("/{productId}")
-    @PreAuthorize("hasRole('ACMON', 'ASSISTANT_ACMON')")
+    @PreAuthorize("hasRole('ADMINISTRATOR', 'ASSISTANT_ADMINISTRATOR')")
     public ResponseEntity<Product> updateOneById(@PathVariable Long productId, @RequestBody @Valid SaveProduct saveProduct){
         Product product = productService.updateOneById(productId, saveProduct);
         return ResponseEntity.ok(product);
     }
 
     @PutMapping("/{productId}/disabled")
-    @PreAuthorize("hasRole('ACMON')")
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     public ResponseEntity<Product> disableOneById(@PathVariable Long productId){
         Product product = productService.disableOneById(productId);
         return ResponseEntity.ok(product);

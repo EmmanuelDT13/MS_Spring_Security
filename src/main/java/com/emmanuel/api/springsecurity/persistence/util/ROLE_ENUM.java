@@ -22,7 +22,7 @@ public enum ROLE_ENUM {
 			)),
 	
 			//
-	ASSISTANT_ACMON(Arrays.asList(
+	ASSISTANT_ADMINISTRATOR(Arrays.asList(
 			RolePermission.READ_ALL_PRODUCTS,
 			RolePermission.READ_ONE_PRODUCT,
 			RolePermission.UPDATE_ONE_PRODUCT,

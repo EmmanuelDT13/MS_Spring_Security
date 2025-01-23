@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authorization.AuthorizationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
@@ -23,7 +24,7 @@ import com.emmanuel.api.springsecurity.persistence.util.RolePermission;
 
 @Configuration
 @EnableWebSecurity
-//@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class HttpSecurityConfig {
 
 	@Autowired
@@ -51,8 +52,7 @@ public class HttpSecurityConfig {
 			.authenticationProvider(authenticationProvider)
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 			.authorizeHttpRequests(authorizeHttpRequests -> {
-				authorizeHttpRequests.requestMatchers(HttpMethod.POST, "/customers/**").permitAll();
-				authorizeHttpRequests.anyRequest().hasRole(ROLE_ENUM.ADMINISTRATOR.name());// .access(my_authorizationManager);
+				this.createHttpRequestsV2(authorizeHttpRequests);	//Instead to have all the request matchers here, doing visual noise, I have extracted all in the "createHttpRequests" method.
 			})
 			.exceptionHandling( exceptionConfig -> {
 				exceptionConfig.authenticationEntryPoint(customAuthenticationEntryPoint);
@@ -71,16 +71,16 @@ public class HttpSecurityConfig {
 		authorizeHttpRequests.requestMatchers(HttpMethod.PUT, "/products/{productId}/disabled").hasAuthority(RolePermission.DISABLE_ONE_PRODUCT.name());
 		
 		//Autorización basada en roles.
-		authorizeHttpRequests.requestMatchers(HttpMethod.GET, "/categories").hasAnyRole(ROLE_ENUM.ADMINISTRATOR.name(), ROLE_ENUM.ASSISTANT_ACMON.name(), ROLE_ENUM.CUSTOMER.name());
+		authorizeHttpRequests.requestMatchers(HttpMethod.GET, "/categories").hasAnyRole(ROLE_ENUM.ADMINISTRATOR.name(), ROLE_ENUM.ASSISTANT_ADMINISTRATOR.name(), ROLE_ENUM.CUSTOMER.name());
 		//authorizeHttpRequests.requestMatchers(HttpMethod.GET, "/categories/{categoryId}").hasAnyRole(ROLE.ACMON.name(), ROLE.ASSISTANT_ACMON.name(), ROLE.CUSTOMER.name());
 		authorizeHttpRequests.requestMatchers(HttpMethod.POST, "/categories").hasRole(ROLE_ENUM.ADMINISTRATOR.name());
-		authorizeHttpRequests.requestMatchers(HttpMethod.PUT, "/categories/{categoryId}").hasAnyRole(ROLE_ENUM.ADMINISTRATOR.name(), ROLE_ENUM.ASSISTANT_ACMON.name());
+		authorizeHttpRequests.requestMatchers(HttpMethod.PUT, "/categories/{categoryId}").hasAnyRole(ROLE_ENUM.ADMINISTRATOR.name(), ROLE_ENUM.ASSISTANT_ADMINISTRATOR.name());
 		authorizeHttpRequests.requestMatchers(HttpMethod.PUT, "/categories/{categoryId}/disabled").hasRole(ROLE_ENUM.ADMINISTRATOR.name());
 		
 		//Autorización implementando expresiones regulares. Este método es compatible con roles y authorities también.
 		//Fíjate cómo en lugar de colocar el id del producto, estamos colocando una expresión regular, la cual establece
 		//que recibirá numeros únicamente. Los cuales irán del 0-9 y se podrán repetir indefinidamente.
-		authorizeHttpRequests.requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.GET, "/categories/[0-9]*")).hasAnyRole(ROLE_ENUM.ADMINISTRATOR.name(), ROLE_ENUM.ASSISTANT_ACMON.name(), ROLE_ENUM.CUSTOMER.name());
+		authorizeHttpRequests.requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.GET, "/categories/[0-9]*")).hasAnyRole(ROLE_ENUM.ADMINISTRATOR.name(), ROLE_ENUM.ASSISTANT_ADMINISTRATOR.name(), ROLE_ENUM.CUSTOMER.name());
 		
 		//Aquí estamos estableciendo los endpoints que serán públicos para cualquier usuario aunque no esté logeado
 		authorizeHttpRequests.requestMatchers(HttpMethod.POST, "/customers/**").permitAll();
@@ -92,7 +92,7 @@ public class HttpSecurityConfig {
 		
 	}
 	
-	//Método que realiza la autorización medainte métodos y anotacones.
+	//Método que realiza la autorización medainte métodos y anotaciones.
 	private void createHttpRequestsV2(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorizeHttpRequests) {
 		
 		//Aquí estamos estableciendo los endpoints que serán públicos para cualquier usuario aunque no esté logeado

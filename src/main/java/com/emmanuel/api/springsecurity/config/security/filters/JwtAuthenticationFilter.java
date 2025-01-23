@@ -70,27 +70,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 //	@Override
 //	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 //			throws ServletException, IOException {
@@ -146,8 +125,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 			System.out.println("Este token ya no está disponible");
 			this.updateToken(token.get());
 		}
-		
-			
 
 		return tokenValido;
 	}
