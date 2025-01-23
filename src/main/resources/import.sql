@@ -57,9 +57,9 @@ INSERT INTO granted_permission (role_id, operation_id) VALUES (3, 15);
 INSERT INTO granted_permission (role_id, operation_id) VALUES (3, 16);
 
 -- CREACIÓN DE USUARIOS
-INSERT INTO usuario (name, username, password, role_id) VALUES ('Emmanuel','Jueves31',  '$2a$12$xmaoiXXitTdWGyhJ9Pope.WhuhQTKgguW/kBK.4BUukbo6I/MMpwu', 1);
-INSERT INTO usuario (name, username, password, role_id) VALUES ('Juan','JuanitoBanana', '$2a$12$xmaoiXXitTdWGyhJ9Pope.WhuhQTKgguW/kBK.4BUukbo6I/MMpwu', 2);
-INSERT INTO usuario (name, username, password, role_id) VALUES ('Ernesto','Ernesto91', '$2a$12$xmaoiXXitTdWGyhJ9Pope.WhuhQTKgguW/kBK.4BUukbo6I/MMpwu', 3);
+INSERT INTO usuario (name, username, password, role_id) VALUES ('Emmanuel','Jueves31',  '$2a$10$WQyz6XdaR.KPG8wOpYbIq.mLDQ4345sDtrQzwZmHNKes4Dr/uMqJu', 1);
+INSERT INTO usuario (name, username, password, role_id) VALUES ('Juan','JuanitoBanana', '$2a$10$uUQ1T5dRput.2G.9BfNaSOWeSkwUjtj8i5Oa.8NB69xZIcSI0mcWK', 2);
+INSERT INTO usuario (name, username, password, role_id) VALUES ('Ernesto','Ernesto91', '$2a$10$GDxs.q69pyU5qji3WdqvjOTF8GTY38bDvF58VtUIV09eaZ.LPuMYa', 3);
 
 -- CREACIÓN DE CATEGORIAS
 INSERT INTO category (name, status) VALUES ('Electrónica', 'ENABLED');

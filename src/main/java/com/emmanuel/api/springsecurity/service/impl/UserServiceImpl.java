@@ -1,6 +1,7 @@
 package com.emmanuel.api.springsecurity.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ public class UserServiceImpl implements IUserService{
 	
 	@Autowired
 	private IRoleService iRoleService;
+	
 	
 	@Override
 	public User createAnUser(UserDtoRequest userDtoRequest) {
@@ -49,6 +51,12 @@ public class UserServiceImpl implements IUserService{
 	public void deleteUser(UserDtoRequest userDtoRequest) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public User readMyProfile() {
+		String subject = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return userrepository.getByUsername(subject).get();
 	}
 
 

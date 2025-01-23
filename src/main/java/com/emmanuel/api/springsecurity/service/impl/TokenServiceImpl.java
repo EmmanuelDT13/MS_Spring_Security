@@ -1,12 +1,9 @@
 package com.emmanuel.api.springsecurity.service.impl;
 
-import java.security.Key;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.crypto.SecretKey;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -14,11 +11,8 @@ import org.springframework.stereotype.Service;
 import com.emmanuel.api.springsecurity.persistence.entity.Token;
 import com.emmanuel.api.springsecurity.persistence.repository.TokenRepository;
 import com.emmanuel.api.springsecurity.persistence.util.Utils;
-
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -33,16 +27,6 @@ public class TokenServiceImpl {
 		Date currentTime = new Date(System.currentTimeMillis());
 		Date expirationTime = new Date(currentTime.getTime() + (60*60*1000));
 		
-//		String token = Jwts.builder()
-//				.setClaims(claims)
-//				.setSubject(user.getUsername())
-//				.setIssuedAt(currentTime)
-//				.setExpiration(expirationTime)
-//				.setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-//				.signWith(createKey(), SignatureAlgorithm.HS256)
-//				.compact();
-		
-		
 		String token = Jwts.builder()
 				
 				.header()
@@ -53,7 +37,6 @@ public class TokenServiceImpl {
 				.expiration(expirationTime)
 				.claims(claims)
 				.signWith(this.createKey(), Jwts.SIG.HS256)
-				
 				.compact();
 		return token;
 	}
