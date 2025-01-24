@@ -23,7 +23,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler{
 			AccessDeniedException accessDeniedException) throws IOException, ServletException {
 		
         ApiError error = new ApiError();
-        error.setMessage("Error: Usted no tiene permiso de acceder a este apartado.");
+        error.setMessage("Error: Si bien es cierto que esta autenticado, usted no tiene permiso de acceder a este apartado.");
         error.setBackedMessage(accessDeniedException.getLocalizedMessage());
         error.setTime(LocalDateTime.now());
         error.setHttpCode(403);

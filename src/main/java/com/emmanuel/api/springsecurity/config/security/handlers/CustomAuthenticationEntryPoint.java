@@ -3,14 +3,14 @@ package com.emmanuel.api.springsecurity.config.security.handlers;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-
 import com.emmanuel.api.springsecurity.dto.ApiError;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,26 +18,28 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint{
 
+	@Autowired
+	private ObjectMapper objectMapper;
+	
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) throws IOException, ServletException {
-		// TODO Auto-generated method stub
+
         ApiError error = new ApiError();
-        error.setMessage("Error: Usted no está autentificado. Inicie sesión o regístrese.");
+        error.setMessage("Error: Por favor, inicie sesion.");
         error.setBackedMessage(authException.getLocalizedMessage());
         error.setTime(LocalDateTime.now());
         error.setHttpCode(401);
 		
-        response.setContentType("application/json");
-        response.setStatus(401);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(HttpStatus.FORBIDDEN.value());
         
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
+		String jsonResponse = objectMapper.writeValueAsString(error);
         
-        String errorResponse = objectMapper.writeValueAsString(error);
-        
-        response.getWriter().write(errorResponse);
 		
+		response.getWriter().write(jsonResponse);
 	}
+
+
 
 }

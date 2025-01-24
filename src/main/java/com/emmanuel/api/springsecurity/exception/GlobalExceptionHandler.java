@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handlerAccessDeniedException(AccessDeniedException exception, HttpServletRequest request){
 
         ApiError error = new ApiError();
-        error.setMessage("Error: Usted no tiene acceso a esta ruta.");
+        error.setMessage("Error: Usted no tiene acceso a esta ruta. Si cree que estoy es un error, contacte a un administrador.");
         error.setBackedMessage(exception.getLocalizedMessage());
         error.setTime(LocalDateTime.now());
         error.setHttpCode(403);

@@ -2,6 +2,8 @@ package com.emmanuel.api.springsecurity.persistence.entity.security;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -17,6 +19,7 @@ public class Role {
 	
 	private String name;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy="role", fetch = FetchType.EAGER)
 	private List<GranthedPermission> permissions;
 
