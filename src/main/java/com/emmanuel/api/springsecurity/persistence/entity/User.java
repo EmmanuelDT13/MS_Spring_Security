@@ -75,8 +75,8 @@ public class User implements UserDetails{
 		if (role == null) return null;
 		if (role.getPermissions() == null) return null;
 		
-		List<SimpleGrantedAuthority> permissions = role.getPermissions().stream().map(authority -> {
-			return new SimpleGrantedAuthority(authority.getOperation().getName());
+		List<SimpleGrantedAuthority> permissions = role.getPermissions().stream().map(permission -> {
+			return new SimpleGrantedAuthority(permission.getOperation().getName());
 			}).collect(Collectors.toList());
 		
 		permissions.add(new SimpleGrantedAuthority("ROLE_" + this.role.getName()));

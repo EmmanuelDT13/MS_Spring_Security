@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,72 +22,79 @@ import com.emmanuel.api.springsecurity.persistence.entity.security.Role;
 import com.emmanuel.api.springsecurity.persistence.repository.OperationRepository;
 import com.emmanuel.api.springsecurity.persistence.repository.UserRepository;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 @Component
-public class MyAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext>{
+public class MyAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext> {
 
 	@Autowired
 	private OperationRepository operationreposiotry;
-	
+
 	@Autowired
 	private UserRepository UserRepository;
-	
+
 	@Override
-	public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext requestContext) {
-		
-		HttpServletRequest request = requestContext.getRequest();
-		String url = this.extractUrl(request);
-		String httpMethod = request.getMethod();
-		boolean isPublic = this.isPublic(url, httpMethod);
-		
-		if (isPublic) return new AuthorizationDecision(isPublic);
-		
-		boolean isGranthed = isGranthed(authentication, request, url, httpMethod, isPublic);
-		return new AuthorizationDecision(isGranthed);
+	public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext object) {
+
+		// 1.- Get the endpoint request.
+		String endpoint = extractEndpoint(object);
+
+		// 2.- Validate if the endpoint is public or not.
+		List<Operation> publicOperations = operationreposiotry.findByPublicAccess();
+		Boolean isPublic = isPublic(endpoint, publicOperations);
+
+		// 3.- If the endpoint is public, the application allow the request without
+		// verify the user's permissions.
+		if (isPublic)
+			return new AuthorizationDecision(isPublic);
+
+		// 4.- If the endpoint isn't public, verify if the user has permissions to
+		// access the endpoint.
+		List<Operation> operations = extractOperations(authentication.get());
+		Boolean isAuthorized = isAuthorized(endpoint, operations);
+
+		return new AuthorizationDecision(isAuthorized);
 	}
 
-	private boolean isGranthed(Supplier<Authentication> authentication, HttpServletRequest request, String url,
-			String httpMethod, boolean isPublic) {
-		
-		if (authentication.get() == null || !(authentication.get() instanceof UsernamePasswordAuthenticationToken)){
-			throw new AuthenticationCredentialsNotFoundException("No se encontraron las credenciales de acceso");
-		}
-		UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken)authentication.get();
-		String username = (String) auth.getPrincipal();
-		User user = UserRepository.getByUsername(username).orElseThrow(()-> new ObjectNotFoundException("No se pudo"));
-		Role my_role = user.getRole();
-		List<Operation> operations = my_role.getPermissions().stream().map(permission -> permission.getOperation()).toList();
+	private String extractEndpoint(RequestAuthorizationContext object) {
+		String uri = object.getRequest().getRequestURI().toString();
+		String contextPath = object.getRequest().getContextPath();
+		String endpoint = uri.replace(contextPath, "");
+		return endpoint;
+	}
 
-		boolean isGranthed = operations.stream().anyMatch(operation->{
+	private Boolean isPublic(String endpoint, List<Operation> operations) {
+		Boolean isPublic = operations.stream().anyMatch(operation -> {
 			String basePath = operation.getModule().getBasePath();
-			String methodPath = operation.getPath();
-			String httpMethodd = operation.getHttpMethod();
-			Pattern pattern = Pattern.compile(basePath.concat(methodPath));
-			Matcher matcher = pattern.matcher(url);			
-			return matcher.matches() && httpMethodd.equals(httpMethod); 
+			Pattern pattern = Pattern.compile(basePath.concat(operation.getPath()));
+			Matcher matcher = pattern.matcher(endpoint);
+			return matcher.matches();
 		});
-		return isGranthed;
-		
-	}
-	
-	private String extractUrl(HttpServletRequest request) {
-		String base_path = request.getContextPath();
-		String url = request.getRequestURI();
-		url = url.replace(base_path, "");
-		return url;
-	}
-	
-	private boolean isPublic(String url, String httpMethod) {
-		
-		List<Operation> operations = operationreposiotry.findByPublicAccess();
-		boolean isPublic = operations.stream().anyMatch(operation -> {
-				String basePath = operation.getModule().getBasePath();
-				Pattern pattern = Pattern.compile(basePath.concat(operation.getPath()));
-				Matcher matcher = pattern.matcher(url);
-				return matcher.matches() && httpMethod.equals(operation.getHttpMethod());
-			});
 		return isPublic;
+	}
+
+	private List<Operation> extractOperations(Authentication authentication) {
+		if (authentication == null || !(authentication instanceof UsernamePasswordAuthenticationToken)) {
+			throw new AuthenticationCredentialsNotFoundException("Username and password not found");
+		}
+
+		UsernamePasswordAuthenticationToken authentication2 = (UsernamePasswordAuthenticationToken) authentication;
+		String username = (String) authentication2.getPrincipal();
+		User user = UserRepository.getByUsername(username)
+				.orElseThrow(() -> new ObjectNotFoundException("User not found"));
+		Role role = user.getRole();
+		List<Operation> operations = role.getPermissions().stream().map(permission -> permission.getOperation())
+				.collect(Collectors.toList());
+
+		return operations;
+	}
+
+	private Boolean isAuthorized(String endpoint, List<Operation> operations) {
+		Boolean isAuthorized = operations.stream().anyMatch(operation -> {
+			String basePath = operation.getModule().getBasePath();
+			Pattern pattern = Pattern.compile(basePath.concat(operation.getPath()));
+			Matcher matcher = pattern.matcher(endpoint);
+			return matcher.matches();
+		});
+		return isAuthorized;
 	}
 
 }

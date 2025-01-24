@@ -24,7 +24,7 @@ import com.emmanuel.api.springsecurity.persistence.util.RolePermission;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+//@EnableMethodSecurity(prePostEnabled = true)
 public class HttpSecurityConfig {
 
 	@Autowired
@@ -52,7 +52,9 @@ public class HttpSecurityConfig {
 			.authenticationProvider(authenticationProvider)
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 			.authorizeHttpRequests(authorizeHttpRequests -> {
-				this.createHttpRequestsV2(authorizeHttpRequests);	//Instead to have all the request matchers here, doing visual noise, I have extracted all in the "createHttpRequests" method.
+				//this.createHttpRequestsV2(authorizeHttpRequests);	//Instead to have all the request matchers here, doing visual noise, I have extracted all in the "createHttpRequests" method.
+				authorizeHttpRequests.anyRequest().access(my_authorizationManager);
+				
 			})
 			.exceptionHandling( exceptionConfig -> {
 				exceptionConfig.authenticationEntryPoint(customAuthenticationEntryPoint);

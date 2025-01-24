@@ -38,9 +38,9 @@ public class SecurityBeansInjector {
 	PasswordEncoder generatePasswordEncoder() {
 		PasswordEncoder encoder = new BCryptPasswordEncoder();
 		
-		System.out.println("Pass1: " + encoder.encode("calve1"));
-		System.out.println("Pass2: " + encoder.encode("calve2"));
-		System.out.println("Pass3: " + encoder.encode("calve3"));
+		System.out.println("Pass1: " + "calve1");
+		System.out.println("Pass2: " + "calve2");
+		System.out.println("Pass3: " + "calve3");
 		
 		return encoder;
 	}
