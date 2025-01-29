@@ -17,6 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/products")
+//@CrossOrigin(origins="www.my-frontend.com", methods = RequestMethod.POST, allowedHeaders = "Content-Type")	//I have commented the annotation because have created a configuration bean.
 public class ProductController {
 
     @Autowired
@@ -36,6 +37,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
+
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ASSISTANT_ADMINISTRATOR', 'CUSTOMER')")
     public ResponseEntity<Product> findOneById(@PathVariable Long productId){
         Optional<Product> product = productService.findOneById(productId);
