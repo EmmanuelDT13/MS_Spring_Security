@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,6 +43,7 @@ public class UserController {
 		
 	}
 	
+//	@CrossOrigin //I have commented the annotation because have created a configuration bean.
 	@PostMapping(path="/login")
 	public ResponseEntity<UserDtoResponse> login(@RequestBody LoginDtoRequest loginDtoRequest){
 		UserDtoResponse userDtoResponse = authenticationServiceImpl.login(loginDtoRequest);
