@@ -12,6 +12,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.stereotype.Component;
 
@@ -72,19 +74,34 @@ public class MyAuthorizationManager implements AuthorizationManager<RequestAutho
 	}
 
 	private List<Operation> extractOperations(Authentication authentication) {
-		if (authentication == null || !(authentication instanceof UsernamePasswordAuthenticationToken)) {
+		if (authentication == null || !(authentication instanceof JwtAuthenticationToken)) {
 			throw new AuthenticationCredentialsNotFoundException("Username and password not found");
 		}
 
-		UsernamePasswordAuthenticationToken authentication2 = (UsernamePasswordAuthenticationToken) authentication;
-		String username = (String) authentication2.getPrincipal();
+		JwtAuthenticationToken authentication2 = (JwtAuthenticationToken) authentication;
+
+		Jwt token = authentication2.getToken();
+
+		String username = token.getSubject();
 		User user = UserRepository.getByUsername(username)
 				.orElseThrow(() -> new ObjectNotFoundException("User not found"));
 		Role role = user.getRole();
 		List<Operation> operations = role.getPermissions().stream().map(permission -> permission.getOperation())
 				.collect(Collectors.toList());
 
+		List<String> scopes = this.extractScopes(token);
+
+		if (!scopes.contains("ALL")){
+
+			operations = operations.stream().filter(operation ->  scopes.contains(operation.getName())).collect(Collectors.toList());
+
+		}
+
 		return operations;
+	}
+
+	private List<String> extractScopes(Jwt token) {
+		return (List<String>)token.getClaims().get("scope");
 	}
 
 	private Boolean isAuthorized(String endpoint, List<Operation> operations) {
