@@ -1,17 +1,20 @@
 package com.emmanuel.api.springsecurity.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.jwt.JwtDecoders;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -26,13 +29,16 @@ import com.emmanuel.api.springsecurity.persistence.util.RolePermission;
 @Configuration
 @EnableWebSecurity
 //@EnableMethodSecurity(prePostEnabled = true)
-public class HttpSecurityConfig {
+public class ResourceServerHttpSecurityConfig {
+
+	@Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
+	private String token_producer;
 
 	@Autowired
 	private AuthenticationProvider authenticationProvider;
 	
-	@Autowired
-	private JwtAuthenticationFilter jwtAuthenticationFilter;
+//	@Autowired
+//	private JwtAuthenticationFilter jwtAuthenticationFilter;
 	
 	@Autowired
 	private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
@@ -51,8 +57,8 @@ public class HttpSecurityConfig {
 			.csrf(csrfConfig -> csrfConfig.disable())
 			.cors(Customizer.withDefaults())
 			.sessionManagement(sessionManagmentConfig -> sessionManagmentConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.authenticationProvider(authenticationProvider)
-			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+			//.authenticationProvider(authenticationProvider) //If we have an Authorization Server, this line is not necessary anymore.
+			//.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) //As this filter works for signed tokens, it's not going to be useful for us anymore.
 			.authorizeHttpRequests(authorizeHttpRequests -> {
 				//this.createHttpRequestsV2(authorizeHttpRequests);	//Instead to have all the request matchers here, doing visual noise, I have extracted all in the "createHttpRequests" method.
 				authorizeHttpRequests.anyRequest().access(my_authorizationManager);
@@ -62,8 +68,32 @@ public class HttpSecurityConfig {
 				exceptionConfig.authenticationEntryPoint(customAuthenticationEntryPoint);
 				exceptionConfig.accessDeniedHandler(customAccessDeniedHandler);
 			})
+			.oauth2ResourceServer(oauth2ResourceServerConfig -> {
+					oauth2ResourceServerConfig.jwt(jwtConfig ->
+							jwtConfig.decoder(JwtDecoders.fromIssuerLocation(token_producer)));
+			})
 			.build();	
 	}
+
+	@Bean
+	JwtAuthenticationConverter jwtAuthenticationConverter(){
+
+		JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+		authoritiesConverter.setAuthoritiesClaimName("permissions");
+		authoritiesConverter.setAuthorityPrefix("");
+
+		JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
+		authenticationConverter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+
+		return authenticationConverter;
+	}
+
+
+
+
+
+
+	//We are not going to use them anymore.
 	//Método que realiza la autorización mediante coincidencias http.
 	private void createHttpRequests(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorizeHttpRequests) {
 		

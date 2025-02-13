@@ -3,6 +3,7 @@ package com.emmanuel.api.springsecurity.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import com.emmanuel.api.springsecurity.dto.UserDtoRequest;
@@ -55,7 +56,8 @@ public class UserServiceImpl implements IUserService{
 
 	@Override
 	public User readMyProfile() {
-		String subject = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Jwt token = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String subject = token.getSubject();
 		return userrepository.getByUsername(subject).get();
 	}
 

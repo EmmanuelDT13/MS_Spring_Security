@@ -49,19 +49,4 @@ public class SecurityBeansInjector {
 		
 		return encoder;
 	}
-	
-    @Bean
-    CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-         
-        config.setAllowedOrigins(List.of("http://127.0.0.1:5500")); // I'll allow only this domain.
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // I allow only the previous http verbs.
-        config.setAllowedHeaders(List.of("*")); // I am allowing all the headers.
-        config.setAllowCredentials(true); // I'm going to allow credentials if the client sends them.
-
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
-	
 }
